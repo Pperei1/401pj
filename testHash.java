@@ -1,21 +1,14 @@
 import java.lang.*;
+import java.io.*;
 import java.util.concurrent.*;
 import java.util.*;
 public class testHash{
 
-	public static void printQueue(ConcurrentLinkedDeque<pair> queue){
-		Iterator<pair> it = queue.iterator();
-		pair curr;
-		while(it.hasNext()){
-			curr = it.next();
-			System.out.println(curr.getPos()+" "+curr.getNextB());
-		}
-	}
-	
-	public static void main (String[] args){
-		BlockingQueue<String> queue = new BlockingQueue<String>();
-		ConcurrentHashMap<String, ConcurrentLinkedDeque<pair>> map = new ConcurrentHashMap<String, ConcurrentLinkedDeque<pair>>()
-		Runnable prod = new seqProd(queue,new FileReader("~/Documents/100seqs.fasta");
+	public static void main (String[] args) throws FileNotFoundException, InterruptedException{
+		BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
+		ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<String, Integer>();
+		FileReader f = new FileReader("./100seqs.fasta");
+		Runnable prod = new seqProd(queue,f);
 		Runnable cons1 = new seqCons(queue,map,15);
 		Runnable cons2 = new seqCons(queue,map,15);
 		Thread t1 = new Thread(prod);
@@ -24,8 +17,17 @@ public class testHash{
 		t1.start();
 		t2.start();
 		t3.start();
-		for (Enumeration<String> e = map.keys(); e.hasMoreElements();)
-       			printQueue(get(e.nextElement());	
+		t1.join();
+		t2.join();
+		t3.join();
+		int count = 0;
+		for (Map.Entry<String, Integer> entry : map.entrySet()) {
+        		String key = entry.getKey().toString();
+        		Integer value = entry.getValue();
+        		System.out.println("key, " + key + " value " + value);
+			count += value.intValue();
+   		 }
+		System.out.println(count);	
 	}
 	
 }

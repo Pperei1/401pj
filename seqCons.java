@@ -1,10 +1,11 @@
+import java.util.concurrent.*;
 public class seqCons implements Runnable{
 
 	private final BlockingQueue<String> queue;
-	private final ConcurrentHashMap<String, ConcurrentLinkedDeque<pair>> map;
+	private final ConcurrentHashMap<String, Integer> map;
 	private final int seqLen;
 	
-	public seqCons (BlockingQueue<String> queue, ConcurrentHashMap<String, ConcurrentLinkedDeque<pair>> map, int l){
+	public seqCons (BlockingQueue<String> queue, ConcurrentHashMap<String, Integer> map, int l){
 		this.queue = queue;
 		this.map = map;
 		this.seqLen = l;
@@ -12,41 +13,41 @@ public class seqCons implements Runnable{
 	
 	public void run(){
 		try{
-			while(true) {consume(queue.take());}
+			String next = queue.take();
+			while(next.charAt(0)!='#') {
+				consume(next);
+				next = queue.take();
+			}
+			queue.put("#");
+			System.out.println("done");
 		}
-		catch{InterruptedException e){
+		catch(InterruptedException e){
 		}
 	}
 	
 	private void consume(String seq){
-		l = seq.length();
-		ind = seqLen;
+		int l = seq.length();
+		int ind = seqLen;
 		String curr = seq.substring(0,ind-1);
-		count = 1;
+		addPair(this.map,curr);
 		char c = seq.charAt(ind);
-		Pair p = new pair(count,c);
-		addPair(this.map,p,curr);
 		ind++;
-		count++;
 		while(ind<l){
 			curr = curr.substring(1)+c;
 			c = seq.charAt(ind);
-			p = new pair(count,c);
-			addPair(this.map,p,curr);
+			addPair(this.map,curr);
 			ind++;
-			count++;
 		}
 	}
 	
-	private void addPair(ConcurrentHashMap<String, ConcurrentLinkedDeque<pair>> map, Pair p, String key){
-		ConcurrentLinkedDeque<pair> list;
+	private void addPair(ConcurrentHashMap<String, Integer> map, String key){
 		if(map.containsKey(key)){
-			map.replace(key, map.get(key).add(p));
+			map.replace(key, new Integer(map.get(key).intValue()+1));
+			System.out.println(key+" "+map.get(key));
 		}
 		else{
-			list = new ConcurrentLinkedDeque<pair>();
-			list.add(pair);
-			map.put(key,list);
+			map.put(key,new Integer(1));
+			System.out.println(key+" "+map.get(key));
 		}
 	}
 }
