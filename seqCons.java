@@ -19,7 +19,6 @@ public class seqCons implements Runnable{
 				next = queue.take();
 			}
 			queue.put("#");
-			System.out.println("done");
 		}
 		catch(InterruptedException e){
 		}
@@ -43,7 +42,6 @@ public class seqCons implements Runnable{
 	private void addPair(ConcurrentHashMap<String, Integer> map, String key){
 		if(map.containsKey(key)){
 			map.replace(key, new Integer(map.get(key).intValue()+1));
-			System.out.println(key+" "+map.get(key));
 		}
 		else{
 			map.put(key,new Integer(1));

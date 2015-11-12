@@ -3,6 +3,20 @@ import java.io.*;
 import java.util.concurrent.*;
 import java.util.*;
 public class testHash{
+	public static <K, V extends Comparable<? super V>> LinkedHashMap<K, V> sortByValue(Map<K, V> map) {
+    		List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+    		Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
+        		public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+            			return (o1.getValue()).compareTo(o2.getValue());
+        		}
+    		});
+
+   		LinkedHashMap<K, V> result = new LinkedHashMap<K, V>();
+    		for (Map.Entry<K, V> entry : list) {
+        		result.put(entry.getKey(), entry.getValue());
+    		}
+    		return result;
+	}
 
 	public static void main (String[] args) throws FileNotFoundException, InterruptedException{
 		BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
@@ -20,11 +34,12 @@ public class testHash{
 		t1.join();
 		t2.join();
 		t3.join();
+		LinkedHashMap<String,Integer> map2 = sortByValue(map);
 		int count = 0;
-		for (Map.Entry<String, Integer> entry : map.entrySet()) {
+		for (Map.Entry<String, Integer> entry : map2.entrySet()) {
         		String key = entry.getKey().toString();
         		Integer value = entry.getValue();
-        		System.out.println("key, " + key + " value " + value);
+        		System.out.println("key: " + key + " value: " + value);
 			count += value.intValue();
    		 }
 		System.out.println(count);	
